@@ -70,7 +70,7 @@ time0=systime(1)
 
     
     ;.....initialisation of tracer spectrum parameters
-    g_max=4.5e5
+    g_max=4.5e6
     g_min=1
     dg=5
     part=2  ;...1=proton  2=electron
@@ -78,9 +78,9 @@ time0=systime(1)
     print,ngamma,"energy bins"
     a=initialise_spectrum(g_max,g_min,dg,ntrac,nn_trac,gammaval) ;...all spectra are created=0
 
-    spectrum_total=fltarr(ngamma)
+    spectrum_total=dblarr(ngamma)
     spectrum_total(*)=1e-30
-    spectrum_final=fltarr(ngamma,n_epochs)
+    spectrum_final=dblarr(ngamma,n_epochs)
     spectrum_final(*)=1e-30
 
     ;...output plot
@@ -94,7 +94,7 @@ time0=systime(1)
      ;...being of FP run (it assumes every family start from a shock injection -> shock=1 
   epoch=0 
   dtmax=dt
-  dti=fltarr(ntime) 
+  dti=dblarr(ntime) 
   dti(*)=dt
   time_run=0.
   shock=1 
@@ -128,7 +128,7 @@ time0=systime(1)
     
      if t eq 0 then plot,gammaval(*),30+alog10(nn_trac(*)),/xlog,xrange=[g_min,g_max],/ystyle,yrange=[40,62],thick=1,title="electron spectra",xtitle='!9g!6',ytitle='log[!9g!6 N(!9g!6)]',/xstyle,/nodata
 
-    spectrum_plot=fltarr(ngamma)
+    spectrum_plot=dblarr(ngamma)
     spectrum_plot(*)=1e-30
    
      norm=30  ;...log10(erg/s) - renormalisation factor to prevent NaN
@@ -186,7 +186,7 @@ endfor
  
   nfr=4
   freqf=[140,610,1400,5000]*1e6  ;...Hz
-  pradio=fltarr(nfr,2)
+  pradio=dblarr(nfr,2)
 
    for ff=0,nfr-1 do begin
   
@@ -282,7 +282,7 @@ end
 function evolve_spectrum,zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,tstep,t,gend,volume,g_max,g_min,dg,ngamma,part
   gend=ngamma
 
-  ;nn=fltarr(ngamma)
+  ;nn=dblarr(ngamma)
   ;nn=nn2
   ;zzc is redshift
   ;..v in km/s
@@ -316,7 +316,7 @@ function evolve_spectrum,zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,tstep,t,gend,v
   cou=nth*1.2e-12 ;..1/s
 
   gam=dblarr(ngamma) ;...array of Lorentz factors 
-  gam=double(dg)*indgen(ngamma)+(g_min)
+  gam=double(dg)*indgen(ngamma,/long)+(g_min)
 
   vpre=1e5*v ;cm/s preshock velocity
   f=(4*m*m)/float(m*m+3)   ;...compression factor 
@@ -399,7 +399,7 @@ function evolve_spectrum,zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,tstep,t,gend,v
       gam_c=gamo
       gam_c=gam(ngamma-2)
       
-      gam=double(dg)*indgen(ngamma)+(g_min)
+      gam=double(dg)*indgen(ngamma,/long)+(g_min)
       gammag=gam
       n_inj=dblarr(ngamma)  ;...spectrum of injected energy
       n_inj(*)=-60
@@ -449,7 +449,7 @@ function evolve_spectrum,zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,tstep,t,gend,v
       gmin_re=long(gmin_re0(0))
       if ns eq 0 then gmin_re=1
 
-      for gag=gmin_re,ngamma-2 do begin
+      for gag=long(gmin_re),ngamma-2 do begin
         cutoff=(1.-(gammag(gag)/double(gammag(ngamma-1))))
         n_re(gag)=(delta+2.)*(gammag(gag))^(-delta)*(total(nn(gmin_re:gag)*dg*(gammag(gmin_re:gag))^(delta-1.))); as in Eq.6 of Kang & Ryu 2011
         if finite(n_re(gag)) ne 1  then print,'problem',n_re(gag),gammag(gag),nn(gag)   ;...warning in case numbers are not finite.
@@ -463,7 +463,7 @@ function evolve_spectrum,zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,tstep,t,gend,v
 
 
   ;...loop over all gammas to evolve the spectrum 
-    for gga=1,gend-1 do begin
+    for gga=1L,gend-1 do begin
 
       gg=uint(gend-gga)
 
@@ -495,7 +495,7 @@ end
 function initialise_spectrum,g_max,g_min,dg,ntrac,nn_trac,gammaval
 
 
-  ngamma=uint(((g_max)-(g_min))/float(dg))
+  ngamma=long(uint(((g_max)-(g_min))/float(dg)))
 
   gam=dblarr(ngamma) ;...logarithm of gamma factor
   gam=dg*indgen(ngamma,/long)+(g_min)-dg*0.5
