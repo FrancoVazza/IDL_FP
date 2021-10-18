@@ -70,7 +70,7 @@ time0=systime(1)
 
     
     ;.....initialisation of tracer spectrum parameters
-    g_max=4.5e6
+    g_max=4.5e5
     g_min=1
     dg=5
     part=2  ;...1=proton  2=electron
@@ -143,6 +143,8 @@ time0=systime(1)
          m=mach1
          vshock=vshock1
          print,'injection by a M=',m,'shock'
+         volume_initial=volume
+         nth_initial=n0
       endif
       
            
@@ -159,9 +161,9 @@ time0=systime(1)
        zzc=zz
        nn=nn_trac(*,p)   ;....for consistency with other routines running on many tracers
        delta_t=t2-t1
-    
+      volume=volume_initial+alog10(nth_initial/float(nth))    ;...change in the volume element due to compression
       ca=evolve_spectrum(zzc,v,t2,t1,nth,m,b0,tpost,norm,nn,shock,delta_t,t,gend,volume,g_max,g_min,dg,ngamma,part)
-        
+     
       spectrum_plot=nn
       spectrum_total+=nn
       
