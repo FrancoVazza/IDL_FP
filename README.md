@@ -11,5 +11,5 @@ The code requires as input a sequence of tracers data, written in column format 
 
      - The code generates the evolution of electron spectra over time, and the final sychrotron emission for a given set of observing frequencies, assuming an arbitrary distance for the source. 
 
-* Details on the method and on its application to cosmological simulations are described in Inchingolo, Wittor, Rajpurohit & Vazza 2021 (MNRAS, submitted, as of this writing). 
+* Details on the method and on its application to cosmological simulations are described in Inchingolo, Wittor, Rajpurohit & Vazza 2021 MNRAS. 
 
